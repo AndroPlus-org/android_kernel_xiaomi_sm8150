@@ -10,17 +10,13 @@ clear
 
 # Resources
 THREAD="-j$(grep -c ^processor /proc/cpuinfo)"
-KERNEL="Image"
 DTBIMAGE="dtb"
-export CLANG_PATH=~/bin/linux-x86/clang-4691093/bin/
-export PATH=${CLANG_PATH}:${PATH}
-export LD_LIBRARY_PATH=:${LD_LIBRARY_PATH}
-export CLANG_TRIPLE=aarch64-linux-gnu-
-export CROSS_COMPILE=~/bin/aarch64-linux-android-4.9/bin/aarch64-linux-android-
-export DTC_EXT=/home/androplus/bin/dtc
-export DTC_OVERLAY_TEST_EXT=~/bin/ufdt_apply_overlay
-export KCFLAGS=-mno-android
-DEFCONFIG="cepheus_mie_defconfig"
+DEFCONFIG=cepheus_mie_defconfig
+TC_DIR=~/bin/aarch64-linux-android-4.9/bin
+# https://github.com/1582130940/android_prebuilts_clang_host_linux-x86_llvm-Snapdragon-6.0.9
+CC_DIR=~/bin/llvm-Snapdragon-6.0.9/bin
+export DTC_EXT=dtc
+export CROSS_COMPILE=${TC_DIR}/aarch64-linux-android-
 
 # Kernel Details
 VER=".v1"
@@ -48,8 +44,8 @@ function clean_all {
 
 function make_kernel {
 		echo
-		make O=out CONFIG_BUILD_ARM64_DT_OVERLAY=y $DEFCONFIG
-		make O=out CONFIG_BUILD_ARM64_DT_OVERLAY=y $THREAD
+		make O=out REAL_CC=${CC_DIR}/clang CLANG_TRIPLE=aarch64-linux-gnu- $DEFCONFIG $THREAD
+		make O=out REAL_CC=${CC_DIR}/clang CLANG_TRIPLE=aarch64-linux-gnu- $THREAD
 
 }
 
@@ -63,19 +59,7 @@ function make_dtb {
 }
 
 function make_boot {
-<< COMMENTOUT
-		$TOOLS_DIR/mkbootimg \
-			--kernel $ZIMAGE_DIR/Image.gz-dtb \
-			--os_version "9.0.0" --os_patch_level "2018-11-01" \
-			--cmdline "androidboot.hardware=qcom console=ttyMSM0,115200n8 earlycon=msm_geni_serial,0xA84000 androidboot.hardware=qcom androidboot.console=ttyMSM0 video=vfb:640x400,bpp=32,memsize=3072000 msm_rtb.filter=0x237 ehci-hcd.park=3 lpm_levels.sleep_disabled=1 service_locator.enable=1 swiotlb=2048 androidboot.configfs=true firmware_class.path=/vendor/firmware_mnt/image loop.max_part=7 buildvariant=userdebug androidboot.verifiedbootstate=green androidboot.selinux=permissive" \
-			--base 0x00000000 \
-			--kernel_offset 0x00008000 \
-			--tags_offset 0x00000100 \
-			--pagesize 4096 \
-			--output ${ZIP_MOVE}boot.img
-COMMENTOUT
-
-		cp -vr $ZIMAGE_DIR/Image.gz-dtb ${REPACK_DIR}/zImage
+		cp -vr $ZIMAGE_DIR/Image-dtb ${REPACK_DIR}/zImage
 }
 
 
