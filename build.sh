@@ -55,7 +55,8 @@ function make_modules {
 }
 
 function make_dtb {
-		$TOOLS_DIR/dtbToolCM -2 -o $REPACK_DIR/$DTBIMAGE -s 2048 -p scripts/dtc/ arch/arm64/boot/
+		#$TOOLS_DIR/dtbToolCM -2 -o $REPACK_DIR/$DTBIMAGE -s 2048 -p scripts/dtc/ arch/arm64/boot/
+		mkdtimg create $REPACK_DIR/dtbo.img --page_size=4096 `find out/arch/arm64/boot/dts -name "*.dtbo"`
 }
 
 function make_boot {
