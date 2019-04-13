@@ -19,7 +19,7 @@ export DTC_EXT=dtc
 export CROSS_COMPILE=${TC_DIR}/aarch64-linux-android-
 
 # Kernel Details
-VER=".v1"
+VER=".v02"
 
 # Paths
 KERNEL_DIR=`pwd`
